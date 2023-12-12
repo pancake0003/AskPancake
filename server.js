@@ -1,44 +1,49 @@
-//import express from "express";
-const express=require('express');
-require('dotenv').config();
+const express = require('express');
+const dotenv = require('dotenv');
+const fs = require('fs').promises;  // Using promises for async/await support
+const OpenAI = require('openai');
+
+dotenv.config();
 
 const app = express();
 const port = 3000;
 
-// app.get('/', (req, res) => {
-//   res.send('Welcome to my server!');
-// });
-
+app.use(express.json());
 app.use(express.static('public'));
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// Assuming you have a file named 'instructions.txt' in the same directory as your server.js
+const instructionsFilePath = 'instructions.txt';
 
+let messages = [];
 
-let messages = [{ "role": "system", "content": "you are a helpful assitant" }]
-
+async function readInstructionsFromFile() {
+  try {
+    const content = await fs.readFile(instructionsFilePath, 'utf-8');
+    messages.push({ role: 'system', content });
+    console.log('Instructions loaded successfully.');
+  } catch (error) {
+    console.error('Error reading instructions file:', error);
+  }
+}
+//let messages = [{ role: 'system', content: 'you are "Joy Song", a cheerful college student. ' }];
+readInstructionsFromFile();
 
 function updateChat(role, content) {
-  messages.push({ "role": role, "content": content });
+  messages.push({ role, content });
 }
-
-const OpenAI = require("openai");
-//import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-callOpenAIText("hi.")
 async function callOpenAIText(prompt) {
-  console.log("fetching")
+  console.log('fetching');
 
-  updateChat("user", prompt);
+  updateChat('user', prompt);
 
   const completion = await openai.chat.completions.create({
     messages: messages,
-    model: "gpt-3.5-turbo-1106",
+    model: 'gpt-3.5-turbo-1106',
     temperature: 1,
     max_tokens: 1000,
     top_p: 1,
@@ -46,10 +51,27 @@ async function callOpenAIText(prompt) {
     presence_penalty: 0,
   });
 
-  let answer = completion.choices[0].message.content
+  let answer = completion.choices[0].message.content;
 
-  updateChat("assistant", answer);
-  console.log(messages)
+  updateChat('assistant', answer);
+  console.log(messages);
 
-  return (answer);
+  return answer;
 }
+
+app.post('/sendMessage', async (req, res) => {
+  try {
+    const userMessage = req.body.message;
+    const aiResponse = await callOpenAIText(userMessage);
+
+    // Respond with the AI's message
+    res.json({ aiResponse });
+  } catch (error) {
+    console.error('Error processing user message:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
