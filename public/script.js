@@ -18,16 +18,16 @@ function sendMessage() {
 // Function to display a random image
 function displayRandomImage() {
     const imagePaths = [
-        './images/1.png',
-        './images/2.png',
-        './images/3.png',
-        './images/3.png',
-        './images/4.png',
+        'https://raw.githubusercontent.com/pancake0003/AskPancake/main/images/1.png',
+        'https://raw.githubusercontent.com/pancake0003/AskPancake/main/images/2.png',
+        'https://raw.githubusercontent.com/pancake0003/AskPancake/main/images/3.png',
+        'https://raw.githubusercontent.com/pancake0003/AskPancake/main/images/4.png',
+        'https://raw.githubusercontent.com/pancake0003/AskPancake/main/images/5.png',
     ];
 
     const randomImagePath = imagePaths[Math.floor(Math.random() * imagePaths.length)];
     //test: https://play-lh.googleusercontent.com/8ddL1kuoNUB5vUvgDVjYY3_6HwQcrg1K2fd_R8soD-e2QYj8fT9cfhfh3G0hnSruLKec
-    randomImage.src = 'https://play-lh.googleusercontent.com/8ddL1kuoNUB5vUvgDVjYY3_6HwQcrg1K2fd_R8soD-e2QYj8fT9cfhfh3G0hnSruLKec';
+    randomImage.src = randomImagePath;
 }
 function sendUserMessage(message) {
     fetch('http://localhost:3000/sendMessage', {

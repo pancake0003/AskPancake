@@ -61,14 +61,14 @@ async function callOpenAIText(prompt) {
 
 app.post('/sendMessage', async (req, res) => {
   try {
-    const userMessage = req.body.message;
-    const aiResponse = await callOpenAIText(userMessage);
+      const userMessage = req.body.message;
+      const aiResponse = await callOpenAIText(userMessage);
 
-    // Respond with the AI's message
-    res.json({ aiResponse });
+      // Respond with the AI's message
+      res.json({ aiResponse });
   } catch (error) {
-    console.error('Error processing user message:', error);
-    res.status(500).json({ error: 'Internal server error' });
+      console.error('Error processing user message:', error);
+      res.status(500).json({ error: 'Internal server error' });
   }
 });
 
