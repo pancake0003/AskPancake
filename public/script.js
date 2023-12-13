@@ -31,7 +31,7 @@ function displayRandomImage() {
 }
 function sendUserMessage(message) {
     //fetch from http://24.144.64.246:4000/SendMessage if using digital console
-    fetch('http://localhost:4000/sendMessage', {
+    fetch('http://24.144.64.246:4000/SendMessage', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
