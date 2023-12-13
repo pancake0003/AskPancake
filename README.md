@@ -8,8 +8,6 @@
 
 <img width="673" alt="Screen Shot 2023-12-12 at 12 31 48 PM" src="https://github.com/pancake0003/AskPancake/assets/146360951/7716f3df-71c4-459b-abac-1520f49c61d3">
 
-<img width="673" alt="Screen Shot 2023-12-12 at 12 31 48 PM" src="https://github.com/pancake0003/AskPancake/assets/146360951/b0323057-bc91-4979-976f-9fe1645599d6">
-
 <img width="698" alt="Screen Shot 2023-12-12 at 12 31 58 PM" src="https://github.com/pancake0003/AskPancake/assets/146360951/bf92351e-5a4b-4549-8e49-5a7caaa2ba2e">
 
 <img width="843" alt="Screen Shot 2023-12-12 at 12 32 34 PM" src="https://github.com/pancake0003/AskPancake/assets/146360951/b0a1223e-4c19-4509-b988-42227c5dee78">
