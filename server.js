@@ -42,6 +42,8 @@ async function callOpenAIText(prompt) {
   try {
     const completion = await openai.chat.completions.create({
       messages: messages,
+      //gpt-3.5-turbo-1106
+      //gpt-4-1106-preview
       model: 'gpt-3.5-turbo-1106',
       temperature: 1,
       max_tokens: 1000,
