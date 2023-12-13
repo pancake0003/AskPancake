@@ -1,6 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const axios = require('axios'); // Use 'axios' instead of 'node-fetch'
+const axios = require('axios');
 const OpenAI = require('openai');
 
 dotenv.config();
@@ -10,9 +10,9 @@ const port = 4000;
 
 app.use(express.json());
 app.use(express.static('public'));
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 let messages = [{ role: 'system', content: '' }];
@@ -32,34 +32,54 @@ async function fetchInstructions() {
 }
 
 async function callOpenAIText(prompt) {
-  console.log('fetching');
-
   const instructions = await fetchInstructions();
   updateChat('system', instructions);
 
   updateChat('user', prompt);
 
-  const completion = await openai.chat.completions.create({
-    messages: messages,
-    model: 'gpt-4-1106-preview', // Change to the desired GPT-4 model identifier
-    temperature: 1,
-    max_tokens: 1000,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-  });
+  // Check the rate limit before making a request
+  const rateLimitInfo = await checkRateLimit();
 
-  let answer = completion.choices[0].message.content;
+  if (!rateLimitInfo.exceeded) {
+    const completion = await openai.chat.completions.create({
+      messages: messages,
+      model: 'gpt-4-1106-preview',
+      temperature: 1,
+      max_tokens: 1000,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
 
-  updateChat('assistant', answer);
-  console.log(messages);
+    let answer = completion.choices[0].message.content;
 
-  return answer;
+    updateChat('assistant', answer);
+    console.log(messages);
+
+    return answer;
+  } else {
+    // Rate limit exceeded, handle gracefully
+    return rateLimitInfo.errorMessage;
+  }
 }
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+async function checkRateLimit() {
+  try {
+    const usage = await openai.usage.retrieve();
+    const tokensUsed = usage.data[0].usage;
+    const tokensLimit = usage.data[0].limit;
+
+    if (tokensUsed >= tokensLimit) {
+      const errorMessage = `Rate limit exceeded. Please wait until the quota is renewed.`;
+      return { exceeded: true, errorMessage };
+    } else {
+      return { exceeded: false };
+    }
+  } catch (error) {
+    console.error('Error checking rate limit:', error);
+    return { exceeded: false };
+  }
+}
 
 app.post('/sendMessage', async (req, res) => {
   try {
