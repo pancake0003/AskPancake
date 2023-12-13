@@ -30,6 +30,7 @@ function displayRandomImage() {
     randomImage.src = randomImagePath;
 }
 function sendUserMessage(message) {
+    //fetch from http://24.144.64.246:4000/SendMessage if using digital console
     fetch('http://localhost:4000/sendMessage', {
         method: 'POST',
         headers: {
