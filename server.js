@@ -71,7 +71,7 @@ app.post('/sendMessage', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+//scared
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
