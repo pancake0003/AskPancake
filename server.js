@@ -10,6 +10,10 @@ const port = 4000;
 
 app.use(express.json());
 app.use(express.static('public'));
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
+});
 
 let messages = [{ role: 'system', content: '' }];
 
@@ -37,7 +41,7 @@ async function callOpenAIText(prompt) {
 
   const completion = await openai.chat.completions.create({
     messages: messages,
-    model: 'gpt-3.5-turbo-1106',
+    model: 'gpt-4-1106-preview', // Change to the desired GPT-4 model identifier
     temperature: 1,
     max_tokens: 1000,
     top_p: 1,
@@ -62,10 +66,11 @@ app.post('/sendMessage', async (req, res) => {
     const userMessage = req.body.message;
     const aiResponse = await callOpenAIText(userMessage);
 
+    // Respond with the AI's message as a JSON object
     res.json({ aiResponse });
   } catch (error) {
     console.error('Error processing user message:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ aiResponse: 'Internal server error' });
   }
 });
 
