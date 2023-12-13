@@ -1,6 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const fs = require('fs').promises;  // Using promises for async/await support
+const axios = require('axios'); // Use 'axios' instead of 'node-fetch'
 const OpenAI = require('openai');
 
 dotenv.config();
@@ -11,33 +11,27 @@ const port = 4000;
 app.use(express.json());
 app.use(express.static('public'));
 
-// Assuming you have a file named 'instructions.txt' in the same directory as your server.js
-const instructionsFilePath = 'instructions.txt';
-
-let messages = [];
-
-async function readInstructionsFromFile() {
-  try {
-    const content = await fs.readFile(instructionsFilePath, 'utf-8');
-    messages.push({ role: 'system', content });
-    console.log('Instructions loaded successfully.');
-  } catch (error) {
-    console.error('Error reading instructions file:', error);
-  }
-}
-//let messages = [{ role: 'system', content: 'you are "Joy Song", a cheerful college student. ' }];
-readInstructionsFromFile();
+let messages = [{ role: 'system', content: '' }];
 
 function updateChat(role, content) {
   messages.push({ role, content });
 }
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+async function fetchInstructions() {
+  try {
+    const response = await axios.get('https://raw.githubusercontent.com/pancake0003/AskPancake/main/instructions.txt');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching instructions:', error);
+    return 'Failed to fetch instructions';
+  }
+}
 
 async function callOpenAIText(prompt) {
   console.log('fetching');
+
+  const instructions = await fetchInstructions();
+  updateChat('system', instructions);
 
   updateChat('user', prompt);
 
@@ -59,19 +53,22 @@ async function callOpenAIText(prompt) {
   return answer;
 }
 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 app.post('/sendMessage', async (req, res) => {
   try {
-      const userMessage = req.body.message;
-      const aiResponse = await callOpenAIText(userMessage);
+    const userMessage = req.body.message;
+    const aiResponse = await callOpenAIText(userMessage);
 
-      // Respond with the AI's message
-      res.json({ aiResponse });
+    res.json({ aiResponse });
   } catch (error) {
-      console.error('Error processing user message:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    console.error('Error processing user message:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
-//scared
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
