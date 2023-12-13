@@ -4,17 +4,17 @@ const randomImage = document.getElementById('random-image');
 
 function sendMessage() {
     const userMessage = userMessageInput.value;
-
+  
     // Add user message to the chat window
     appendMessage('user', userMessage);
-
+  
     // Send user message to the server
-
     sendUserMessage(userMessage);
-
+  
     // Clear the user input
     userMessageInput.value = '';
-}
+  }
+  
 // Function to display a random image
 function displayRandomImage() {
     const imagePaths = [
@@ -33,26 +33,32 @@ function sendUserMessage(message) {
     //fetch from http://24.144.64.246:4000/SendMessage if using digital console
     //fetch('http://localhost:4000/SendMessage', {
     fetch('http://24.144.64.246:4000/SendMessage', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message }),
     })
-        .then(response => response.json())
-        .then(data => {
-            // Add AI response to the chat window
-            appendMessage('ai', data.aiResponse);
-            
-            // Display a random image
-            displayRandomImage();
-        })
-        .catch(error => {
-            console.error('Error sending message to the server:', error);
-        });
+      .then(response => response.json())
+      .then(data => {
+        // Check if AI response contains rate limit message
+        if (data.aiResponse.includes('Rate limit exceeded')) {
+          // Display rate limit message in the user input box
+          userMessageInput.value = data.aiResponse;
+        } else {
+          // Add AI response to the chat window
+          appendMessage('ai', data.aiResponse);
+  
+          // Display a random image
+          displayRandomImage();
+        }
+      })
+      .catch(error => {
+        console.error('Error sending message to the server:', error);
+      });
     // Clear the user input
     userMessageInput.value = '';
-}
+  }
 
 
 function generateAIResponse(userInput) {

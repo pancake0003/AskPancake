@@ -32,15 +32,14 @@ async function fetchInstructions() {
 }
 
 async function callOpenAIText(prompt) {
+  console.log('fetching');
+
   const instructions = await fetchInstructions();
   updateChat('system', instructions);
 
   updateChat('user', prompt);
 
-  // Check the rate limit before making a request
-  const rateLimitInfo = await checkRateLimit();
-
-  if (!rateLimitInfo.exceeded) {
+  try {
     const completion = await openai.chat.completions.create({
       messages: messages,
       model: 'gpt-4-1106-preview',
@@ -52,14 +51,20 @@ async function callOpenAIText(prompt) {
     });
 
     let answer = completion.choices[0].message.content;
-
     updateChat('assistant', answer);
     console.log(messages);
-
     return answer;
-  } else {
-    // Rate limit exceeded, handle gracefully
-    return rateLimitInfo.errorMessage;
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.error) {
+      const apiError = error.response.data.error;
+      if (apiError.code === 'rate_limit_exceeded') {
+        console.log(`Rate limit exceeded. Please try again in ${apiError.error.x-ratelimit-reset-tokens}.`);
+        // You might want to inform the client or handle this case appropriately
+        return 'Rate limit exceeded. Please try again later.';
+      }
+    }
+    console.error('Error processing user message:', error);
+    return 'Internal server error';
   }
 }
 
