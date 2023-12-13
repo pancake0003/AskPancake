@@ -30,7 +30,7 @@ function displayRandomImage() {
     randomImage.src = randomImagePath;
 }
 function sendUserMessage(message) {
-    fetch('http://localhost:3000/sendMessage', {
+    fetch('http://localhost:4000/sendMessage', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
