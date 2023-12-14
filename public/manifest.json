@@ -11,7 +11,8 @@
     "icons": [
         {
             "src": "./icons/AP_icon.png",
-            "sizes": "1024x1024"
+            "sizes": "1024x1024",
+            "purpose": "maskable"
         }
     ]
   }
