@@ -10,7 +10,7 @@
     "description": "Joy Song's integrated askMeAnything panel",
     "icons": [
         {
-            "src": "./icons/AP_icon.png",
+            "src": "https://raw.githubusercontent.com/pancake0003/AskPancake/main/public/icons/AP_icon.png",
             "sizes": "1024x1024",
             "purpose": "maskable"
         }
