@@ -11,6 +11,15 @@ const port = 4000;
 app.use(express.json());
 app.use(express.static('public'));
 
+// Serve static files from the 'public' folder
+//app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
+});
+
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
