@@ -6,7 +6,7 @@
     "display": "standalone",
     "orientation": "landscape",
     "scope": "/",
-    "start_url": "http://24.144.64.246:4000/",
+    "start_url": "./",
     "description": "Joy Song's integrated askMeAnything panel",
     "icons": [
         {

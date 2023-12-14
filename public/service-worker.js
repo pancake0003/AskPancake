@@ -8,13 +8,8 @@ const urlsToCache = [
 ];
 self.addEventListener('install', (event) => {
     event.waitUntil(
-      caches.open('your-cache-name').then((cache) => {
-        return cache.addAll([
-          '/',
-          '/index.html'
-          //'/path/to/other/resources',
-          // Add other files you want to cache
-        ]);
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.addAll(urlsToCache);
       })
     );
   });
