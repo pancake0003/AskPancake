@@ -43,41 +43,67 @@ async function fetchInstructions() {
 async function callOpenAIText(prompt) {
   console.log('fetching');
 
-  const instructions = await fetchInstructions();
-  updateChat('system', instructions);
+  // Read instructions only once at the beginning
+  if (!messages.find((msg) => msg.role === 'system' && msg.content !== '')) {
+    const instructions = await fetchInstructions();
+    updateChat('system', instructions);
+  }
 
+  // Update user message
   updateChat('user', prompt);
 
-  try {
+  // Get the total number of tokens in the conversation
+  const totalTokens = messages.reduce(
+    (acc, msg) => acc + msg.content.split(' ').length,0
+  );
+
+  // Set a maximum number of tokens per request
+  //16385
+  const maxTokensPerRequest = 4096;
+
+  // Initialize an array to store the responses
+  let responses = [];
+
+  // Iterate over the conversation tokens in chunks
+  for (let i = 0; i < totalTokens; i += maxTokensPerRequest) {
+    const tokensChunk = messages
+      .map((msg) => msg.content.split(' '))
+      .flat()
+      .slice(i, i + maxTokensPerRequest);
+
+    // Create a chunked conversation
+    const chunkedConversation = messages.map((msg) => ({ ...msg, content: tokensChunk.join(' ') }));
+
+    // Call OpenAI API with the chunked conversation
     const completion = await openai.chat.completions.create({
-      messages: messages,
+      messages: chunkedConversation,
       //gpt-3.5-turbo-1106
       //gpt-4-1106-preview
-      model: 'gpt-3.5-turbo-1106',
+      model: 'gpt-4-1106-preview',
       temperature: 1,
-      max_tokens: 1000,
+      max_tokens: maxTokensPerRequest,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
     });
 
-    let answer = completion.choices[0].message.content;
-    updateChat('assistant', answer);
-    console.log(messages);
-    return answer;
-  } catch (error) {
-    if (error.response && error.response.data && error.response.data.error) {
-      const apiError = error.response.data.error;
-      if (apiError.code === 'rate_limit_exceeded') {
-        console.log(`Rate limit exceeded. Please try again in ${apiError.error.x-ratelimit-reset-tokens}.`);
-        // You might want to inform the client or handle this case appropriately
-        return 'Rate limit exceeded. Please try again later.';
-      }
-    }
-    console.error('Error processing user message:', error);
-    return 'Internal server error';
+    // Get the answer from the response
+    const answer = completion.choices[0].message.content;
+
+    // Add the answer to the responses array
+    responses.push(answer);
   }
+
+  // Join the responses into a single string
+  const finalResponse = responses.join(' ');
+
+  // Update the assistant message with the final response
+  updateChat('assistant', finalResponse);
+  console.log(messages);
+
+  return finalResponse;
 }
+
 
 async function checkRateLimit() {
   try {
