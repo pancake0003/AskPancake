@@ -1,34 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./style.css">
-    <link rel="manifest" href="./manifest.json">
-    <base href="./">
-    <title>Pancake's Chat</title>
-    <script>
-        if ('serviceWorker' in navigator) {
-            //navigator.serviceWorker.register('https://raw.githubusercontent.com/pancake0003/AskPancake/main/public/service-worker.js')
-            navigator.serviceWorker.register('./service-worker.js')
-                .then(function (reg) {
-                    if (reg.installing) {
-                        console.log('Service worker installing');
-                    } else if (reg.waiting) {
-                        console.log('Service worker installed');
-                    } else if (reg.active) {
-                        console.log('Service worker active');
-                    }
-                })
-                .catch(function (error) {
-                    // registration failed
-                    console.log('Registration failed with ' + error);
-                });
-        }
-    </script>
-</head>
+    <head>
+        <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16x16.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <link rel="manifest" href="manifest.json">
+        <title>Pancake's Chat</title>
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            }
+        </script>
+    </head>
 <body>
     <div id="main-container">
         <div id="blank-window">
@@ -44,6 +36,6 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>

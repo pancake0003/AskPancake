@@ -5,13 +5,13 @@
     "background_color": "#ffffff",
     "display": "standalone",
     "orientation": "landscape",
+    "scope": "/",
     "start_url": "./",
     "description": "Joy Song's integrated askMeAnything panel",
     "icons": [
         {
-            "src": "https://raw.githubusercontent.com/pancake0003/AskPancake/main/public/icons/AP_icon.png",
-            "sizes": "1024x1024",
-            "purpose": "maskable"
+            "src": "./icons/AP_icon.png",
+            "sizes": "1024x1024"
         }
     ]
   }

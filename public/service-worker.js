@@ -3,12 +3,11 @@ const urlsToCache = [
   '/',
   'index.html',
   'script.js',
-  'style.css',
-  'icon.png'
+  'style.css'
 ];
 self.addEventListener('install', (event) => {
     event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
+      caches.open('your-cache-name').then((cache) => {
         return cache.addAll(urlsToCache);
       })
     );
@@ -21,3 +20,4 @@ self.addEventListener('install', (event) => {
       })
     );
   });
+  
